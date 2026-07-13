@@ -2,12 +2,6 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load files
-model = joblib.load("model.pkl")
-tfidf = joblib.load("tfidf.pkl")
-pca = joblib.load("pca.pkl")
-label_encoder = joblib.load("encoder.pkl")
-
 st.set_page_config(page_title="Archaeological Artifact Classification")
 
 st.title("🏺 Archaeological Artifact Classification")
