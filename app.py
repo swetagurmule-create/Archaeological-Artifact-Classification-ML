@@ -2,11 +2,6 @@ import streamlit as st
 import joblib
 import numpy as np
 
-model = joblib.load("model.pkl")
-tfidf = joblib.load("tfidf.pkl")
-pca = joblib.load("pca.pkl")
-encoder = joblib.load("encoder.pkl")
-
 st.title("🏺 Archaeological Artifact Classification")
 
 object_name = st.text_input("Object Name")
