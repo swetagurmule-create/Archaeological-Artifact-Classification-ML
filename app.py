@@ -1,30 +1,34 @@
 import streamlit as st
+import pandas as pd
+import joblib
 
-st.set_page_config(
-    page_title="Archaeological Artifact Classification",
-    page_icon="🏺",
-    layout="centered"
-)
+# Load files
+model = joblib.load("model.pkl")
+tfidf = joblib.load("tfidf.pkl")
+pca = joblib.load("pca.pkl")
+label_encoder = joblib.load("encoder.pkl")
+
+st.set_page_config(page_title="Archaeological Artifact Classification")
 
 st.title("🏺 Archaeological Artifact Classification")
 
-st.write("""
-Welcome to the Archaeological Artifact Classification Project.
+st.write("Predict the Cultural Period of an archaeological artifact.")
 
-This project is developed using Machine Learning to classify archaeological artifacts.
+object_name = st.text_input("Object Name")
+culture = st.text_input("Culture")
+medium = st.text_input("Medium")
+country = st.text_input("Country")
 
-Currently this is the deployed version of the project.
-The prediction model will be integrated soon.
-""")
+if st.button("Predict"):
 
-uploaded_file = st.file_uploader(
-    "Upload an Artifact Image",
-    type=["jpg", "jpeg", "png"]
-)
+    text = object_name + " " + culture + " " + medium + " " + country
 
-if uploaded_file is not None:
-    st.image(uploaded_file, caption="Uploaded Image", use_container_width=True)
-    st.success("Image uploaded successfully!")
+    vector = tfidf.transform([text])
 
-    if st.button("Predict"):
-        st.info("Model integration is under development.")
+    vector = pca.transform(vector.toarray())
+
+    prediction = model.predict(vector)
+
+    result = label_encoder.inverse_transform(prediction)
+
+    st.success(f"Predicted Cultural Period: {result[0]}")
