@@ -1,12 +1,13 @@
 import streamlit as st
-import pandas as pd
 import joblib
+import numpy as np
 
-st.set_page_config(page_title="Archaeological Artifact Classification")
+model = joblib.load("model.pkl")
+tfidf = joblib.load("tfidf.pkl")
+pca = joblib.load("pca.pkl")
+encoder = joblib.load("encoder.pkl")
 
 st.title("🏺 Archaeological Artifact Classification")
-
-st.write("Predict the Cultural Period of an archaeological artifact.")
 
 object_name = st.text_input("Object Name")
 culture = st.text_input("Culture")
@@ -17,12 +18,18 @@ if st.button("Predict"):
 
     text = object_name + " " + culture + " " + medium + " " + country
 
-    vector = tfidf.transform([text])
+    X = tfidf.transform([text])
 
-    vector = pca.transform(vector.toarray())
+    X = pca.transform(X.toarray())
 
-    prediction = model.predict(vector)
+    pred = model.predict(X)
 
-    result = label_encoder.inverse_transform(prediction)
+    proba = model.predict_proba(X)
 
-    st.success(f"Predicted Cultural Period: {result[0]}")
+    confidence = np.max(proba) * 100
+
+    period = encoder.inverse_transform(pred)
+
+    st.success(f"Predicted Period : {period[0]}")
+
+    st.info(f"Confidence : {confidence:.2f}%")
